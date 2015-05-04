@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Gifasent": {
+            "applicationId": "y25UP5nJjZH9sdY8bcgHJwgNgi4WRflOXwG5Q01K", 
+            "masterKey": "SHxDYABEZF0QknDxmnf44ZwUM35ubax5WKgjFs7q"
+        }, 
+        "_default": {
+            "link": "Gifasent"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.3.0"
+    }
+}

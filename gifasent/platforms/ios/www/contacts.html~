@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://cdn.firebase.com/js/client/1.0.15/firebase.js"></script>
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/contacts.css" />
+    <link href="./css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" src="lib/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="lib/underscore.js"></script>
+    <script src="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js"></script>
+    <body>
+        <div class="content">
+	        <div class="navbar">
+                <i class="fa fa-plus-square fa-4x" onclick="addListItem(1)" style="position:absolute; right:0px; color:white;"></i>
+                <h2>Gifasent</h2>
+            </div>
+            <div class="contacts">
+                <ul data-role="listview" id="contactList"></ul>
+            </div>
+        </div>
+
+       <!-- <script type="text/javascript" src="./cordova.js"></script>-->
+        <script type="text/javascript" src="js/contacts.js"></script>
+        <script>
+            var myDataRef = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/John/contacts');
+            
+            myDataRef.on('value', function (snapshot) {
+                         var users = Object.keys(snapshot.val());
+                         _.each(users, function(user) {
+                            console.log(user);
+                                $('#contactList').append('<li onclick="nextPage('+"'"+user+"'"+')">'+user+'</li>').listview("refresh");
+                        });
+                         
+                
+            }, function (errorObject) {
+                console.log('The read failed: ' + errorObject.code);
+            });
+            
+            function nextPage(user){
+                console.log(user);
+                var changeref = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/John/');
+                changeref.update({current_rec:user});
+                location.href = "message.html";
+            }
+>>>>>>> e3b7b93ccbf749fc6e520b6fe55a2eaacfc44ebc
+        </script>
+
+    </body>
+</html>

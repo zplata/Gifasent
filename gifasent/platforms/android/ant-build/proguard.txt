@@ -1,0 +1,3 @@
+# view AndroidManifest.xml #generated:6
+-keep class com.gifasent.app.Gifasent { <init>(...); }
+

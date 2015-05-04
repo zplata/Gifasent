@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="https://cdn.firebase.com/js/client/1.0.15/firebase.js"></script>
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.css" />
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="stylesheet" type="text/css" href="css/contacts.css" />
+    <link href="./css/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <script type="text/javascript" src="lib/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="lib/underscore.js"></script>
+    <script src="http://code.jquery.com/mobile/1.3.0/jquery.mobile-1.3.0.min.js"></script>
+    <body>
+        <div class="content">
+	    <div class="navbar" style="font-size:3vh;">
+		
+                <i class="fa fa-plus-square fa-3x" onclick="addListItem(1)" style="position:absolute; right:0px; color:white;z-index:1000"></i>
+                <img src="./img/logo.png" style="height:100%"/>
+		
+            </div>
+		<input type="text" name="name" id="userToAdd" style="text-transform:none;left:0px;right:0px;display:block;margin-left:auto;margin-right:auto;width:50%;min-width:0px;position:absolute;background-color:white;top:0px; height:10%; font-size:3vh;" maxlength="20"/>
+            <div class="contacts">
+                <ul data-role="listview" id="contactList"></ul>
+            </div>
+        </div>
+
+       <!-- <script type="text/javascript" src="./cordova.js"></script>-->
+        <script type="text/javascript" src="js/contacts.js"></script>
+        <script>
+            var cur = window.localStorage.getItem("userName");
+	    var myDataRef = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/'+cur+'/contacts');
+            
+            myDataRef.on('value', function (snapshot) {
+                         var users = Object.keys(snapshot.val());
+			$("#contactList").empty();
+                         _.each(users, function(user) {
+                                if(snapshot.val()[user]["notification"] == "1") {
+                                    $('#contactList').append('<li style="font-size:30px;" onclick="nextPage('+"'"+user.toLowercase()+"'"+')"><i class="fa fa-square fa-2x" style="z-index:-1;color:#E979AC; padding-right:20px;"></i>' + user +'<i onclick="deleteUser('+"'"+user.toLowercase()+"'"+')" class="fa fa-trash fa-2x" style="color:red;z-index:1;float:right;"></li>');
+                                } else {
+                                    $('#contactList').append('<li style="font-size:30px;" onclick="nextPage('+"'"+user+"'"+')"><i class="fa fa-square-o fa-2x" style="z-index:-1;color:#E979AC; padding-right:20px;"></i>' + user +'<i onclick="deleteUser('+"'"+user.toLowercase()+"'"+')" class="fa fa-trash fa-2x" style="color:red;z-index:1;float:right;"></li>');
+                                
+                                }
+				$("#contactList").listview("refresh");
+                        });
+                         
+                
+            }, function (errorObject) {
+                console.log('The read failed: ' + errorObject.code);
+            });
+            
+        function nextPage(user){
+		user = user.toLowerCase();
+                var changeref = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/'+cur+'/');
+		var userExists;
+		changeref.child("contacts").child(user).once("value",function(snapshot){
+			userExists = snapshot.val() !=null;
+			console.log(snapshot.val() + " " + changeref.child("contact").child(user));
+			if (userExists){
+				changeref.update({current_rec:user});
+				changeref.child("contacts").child(user).update({notification:0});
+				location.href = "message.html";
+			}
+		});
+		
+        }
+        
+        function deleteUser(user) {
+	    user = user.toLowerCase();
+            if(confirm("Are you sure you want to delete this user?")) {
+                var deleteref = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/'+cur+'/contacts/'+user);
+                var deletecur = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/'+user+'/contacts/'+cur);
+                deleteref.set(null);
+                deletecur.set(null);
+                location.href = "contacts.html";
+            }
+        }
+	    var i = 0;
+	    function addListItem() {
+		var newContact = $("#userToAdd").val().toLowerCase();
+	        var newDatabase = new Firebase("https://sizzling-fire-9757.firebaseio.com/users");
+		var userExists = false;
+		var contactNotExists = false;
+
+		 newDatabase.child(newContact).once("value",function(snapshot){
+			userExists = snapshot.val() !== null;
+			myDataRef.child(newContact).once("value",function(snapshot){
+				contactNotExists = snapshot.val() === null;
+			});
+			if (userExists && contactNotExists){
+			    newDatabase.child(cur).child("contacts").child(newContact).update({current_image:"http://media.giphy.com/media/7WW7HFrgAZ8dy/giphy.gif",current_text:"Welcome to Gifasent",notification:1});
+			    newDatabase.child(newContact).child("contacts").child(cur).update({current_image:"http://media.giphy.com/media/7WW7HFrgAZ8dy/giphy.gif",current_text:"Welcome to Gifasent",notification:1});
+			} 
+		});
+
+
+
+	    } 
+        </script>
+
+    </body>
+</html>

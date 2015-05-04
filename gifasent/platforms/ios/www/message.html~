@@ -1,0 +1,71 @@
+<DOCTYPE html>
+
+<html>
+	<head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+	<link href="./css/font-awesome/css/font-awesome.min.css" rel="stylesheet"> 
+<script src="https://cdn.firebase.com/js/client/1.0.15/firebase.js"></script>
+<script type="text/javascript" src="lib/jquery-2.1.1.min.js"></script>
+        <title>Gifasent</title>
+	</head>
+
+	<body>
+		<div class="content">
+			<div class="navbar">
+				<a href="contacts.html"><i class="fa fa-arrow-left fa-5x" style="vertical-align:middle;line-height:100%;"></i></a>
+			</div>
+			<div class="gif" id="myGif">
+				<!--<img id ="myImage" src="" style ="display:block;margin-left:auto;margin-right:auto;height:100%;"/>-->		
+			</div>
+			<div class="button" id="netGif" onclick="getGif()" style="">
+				<h1>Gif!</h1>
+			</div>
+		</div>
+
+	</body>
+	
+	<script>
+		var cur = "John";
+		var rec ='';
+		var myDataRef = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/');
+		var recDataRef = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/'+rec+'/contacts');
+		var current_image = "";
+		$(document).ready( function(){
+	
+			myDataRef.child(cur).on("value",function(snapshot){
+				rec = snapshot.val()["current_rec"];
+				recDataRef = new Firebase('https://sizzling-fire-9757.firebaseio.com/users/'+rec+'/contacts');
+				current_image = snapshot.val()["contacts"][rec]["current_image"];
+				console.log(current_image);
+  				document.getElementById("myGif").style.backgroundImage = "url('"+current_image+"')";
+			});
+			var fontSize = parseInt($(".button").height()*.8)+"px";
+			$(".button h1").css('font-size', fontSize);
+			
+            		/*myDataRef.child(cur).child("contacts").child(rec).on("value", function(snapshot) {
+				current_image =snapshot.val()["current_image"];
+				console.log(current_image);
+  				document.getElementById("myGif").style.backgroundImage = "url('"+snapshot.val()["current_image"]+"')";
+			});*/
+
+		});
+
+		function getGif(){
+			document.getElementById("netGif").color= "#3C1048";
+			document.getElementById("netGif").backgroundColor="#FFD7BF";	
+
+			var xhr = $.get("http://api.giphy.com/v1/gifs/random?q=cloud&api_key=dc6zaTOxFJmzC","json");
+			
+			xhr.done(function(data) {				
+				document.getElementById("myGif").style.backgroundImage = "url('"+data["data"]["image_original_url"]+"')";           
+				myDataRef.child(cur+"/contacts").child(rec).update({current_image:data["data"]["image_original_url"]});
+				recDataRef.child(cur).update({current_image:data["data"]["image_original_url"]});
+			});
+		}
+	</script>
+
+</html>
